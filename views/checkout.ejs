@@ -1,0 +1,61 @@
+<h1>Checkout</h1>
+<p class="sub">Lengkapi data pembeli lalu pilih payment gateway.</p>
+
+<div class="card">
+  <h3 style="margin-top:0">Ringkasan Pesanan</h3>
+  <table style="width:100%; border-collapse:collapse">
+    <tr>
+      <td style="padding:6px 0"><%= product.name %> × <strong><%= qty %></strong></td>
+      <td style="padding:6px 0; text-align:right; font-weight:700">
+        Rp <%= (product.price * qty).toLocaleString('id-ID') %>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:6px 0; border-top:1px solid #e3e7f0; font-weight:700">Total</td>
+      <td style="padding:6px 0; border-top:1px solid #e3e7f0; text-align:right; font-weight:700; color:var(--accent-dark)">
+        Rp <%= (product.price * qty).toLocaleString('id-ID') %>
+      </td>
+    </tr>
+  </table>
+
+  <form method="POST" action="/checkout">
+    <input type="hidden" name="product_id" value="<%= product.id %>">
+    <input type="hidden" name="qty" value="<%= qty %>">
+
+    <label for="buyer_name">Nama Lengkap</label>
+    <input type="text" id="buyer_name" name="buyer_name" required placeholder="Nama kamu">
+
+    <label for="buyer_email">Email</label>
+    <input type="email" id="buyer_email" name="buyer_email" required placeholder="email@contoh.com">
+
+    <label for="buyer_phone">Nomor Telepon</label>
+    <input type="tel" id="buyer_phone" name="buyer_phone" required placeholder="08xxxxxxxxxx">
+
+    <label>Pilih Payment Gateway</label>
+    <div>
+      <label style="display:inline-flex; align-items:center; gap:6px; font-weight:400">
+        <input type="radio" name="gateway" value="pakasir" checked> Pakasir
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; font-weight:400; margin-left:14px">
+        <input type="radio" name="gateway" value="ipaymu" disabled> iPaymu <small>(segera — FASE 2)</small>
+      </label>
+      <label style="display:inline-flex; align-items:center; gap:6px; font-weight:400; margin-left:14px">
+        <input type="radio" name="gateway" value="doku" disabled> DOKU <small>(segera — FASE 3)</small>
+      </label>
+    </div>
+
+    <label for="payment_method">Metode Pembayaran (Pakasir)</label>
+    <select id="payment_method" name="payment_method">
+      <option value="qris">QRIS</option>
+      <option value="bni_va">Virtual Account BNI</option>
+      <option value="bri_va">Virtual Account BRI</option>
+      <option value="cimb_niaga_va">Virtual Account CIMB Niaga</option>
+      <option value="permata_va">Virtual Account Permata</option>
+    </select>
+
+    <div style="margin-top:22px">
+      <button type="submit" class="btn">Bayar Sekarang</button>
+      <a class="btn secondary" href="/">Kembali</a>
+    </div>
+  </form>
+</div>

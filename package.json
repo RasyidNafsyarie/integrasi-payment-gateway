@@ -1,0 +1,31 @@
+{
+  "name": "payment-gateway-playground",
+  "version": "0.1.0",
+  "description": "Website percobaan checkout multi payment gateway Indonesia (Pakasir, iPaymu, DOKU) — sandbox hingga real payment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "db:init": "node db/init.js"
+  },
+  "keywords": [
+    "payment-gateway",
+    "pakasir",
+    "ipaymu",
+    "doku",
+    "qris"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.19.0",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

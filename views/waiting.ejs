@@ -1,0 +1,14 @@
+<h1>Menunggu Pembayaran</h1>
+<p class="sub">Selesaikan pembayaran sebelum waktu habis.</p>
+
+<div class="card">
+  <% if (typeof order !== 'undefined' && order) { %>
+    <p><strong>Order ID:</strong> <%= order.order_id %></p>
+    <p><strong>Total:</strong> Rp <%= Number(order.amount).toLocaleString('id-ID') %></p>
+    <p><span class="status <%= order.status %>"><%= order.status %></span></p>
+    <!-- QRIS / nomor VA / tombol bayar akan dirender di sini pada FASE 2 -->
+  <% } else { %>
+    <p>Belum ada order aktif.</p>
+  <% } %>
+  <a class="btn secondary" href="/">Kembali ke Dashboard</a>
+</div>

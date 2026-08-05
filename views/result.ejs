@@ -1,0 +1,18 @@
+<h1>
+  <% if (status === 'PAID') { %>✅ Pembayaran Berhasil
+  <% } else if (status === 'PENDING') { %>⏳ <%- title %>
+  <% } else { %>❌ Pembayaran Tidak Berhasil<% } %>
+</h1>
+<p class="sub"><%= message %></p>
+
+<div class="card">
+  <% if (typeof order !== 'undefined' && order) { %>
+    <p><strong>Order ID:</strong> <%= order.order_id %></p>
+    <p><strong>Total:</strong> Rp <%= Number(order.amount).toLocaleString('id-ID') %></p>
+    <p><strong>Gateway:</strong> <%= order.gateway %> (<%= order.payment_method %>)</p>
+    <p><span class="status <%= order.status %>"><%= order.status %></span></p>
+  <% } %>
+  <div style="margin-top:18px">
+    <a class="btn" href="/">Belanja Lagi</a>
+  </div>
+</div>

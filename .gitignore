@@ -1,0 +1,25 @@
+# Dependensi
+node_modules/
+
+# Kredensial — JANGAN pernah di-commit
+.env
+.env.local
+.env.production
+
+# Database lokal
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+
+# Log & OS
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+
+# Dokumen perencanaan internal (tidak dipush ke GitHub)
+PRD.md
+TASKLIST-*.md
+
+# Folder internal Qoder
+.qoder/
