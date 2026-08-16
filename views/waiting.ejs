@@ -4,7 +4,7 @@
 <div class="card">
   <% if (typeof order !== 'undefined' && order) { %>
     <p><strong>Order ID:</strong> <%= order.order_id %></p>
-    <p><strong>Total Bayar:</strong> Rp <%= Number(order.amount).toLocaleString('id-ID') %></p>
+    <p><strong>Total Bayar:</strong> Rp <%= Number(order.total_payment || order.amount).toLocaleString('id-ID') %></p>
     <p><strong>Metode:</strong> <%= order.payment_method %></p>
     <p><span class="status <%= order.status %>"><%= order.status %></span></p>
 
@@ -37,7 +37,12 @@
 <% if (typeof order !== 'undefined' && order && order.status !== 'PAID' && order.expired_at) { %>
 <script>
   // Countdown sisa waktu pembayaran berdasarkan expired_at dari gateway.
-  const target = new Date('<%= order.expired_at %>'.replace(' ', 'T') + '+07:00').getTime();
+  // Mendukung 2 format: ISO (sudah ada Z / offset) atau 'YYYY-MM-DD HH:MM:SS' (WIB).
+  const raw = '<%= order.expired_at %>';
+  const hasZone = /Z$|[+-]\d{2}:\d{2}$/.test(raw);
+  const target = hasZone
+    ? new Date(raw).getTime()
+    : new Date(raw.replace(' ', 'T') + '+07:00').getTime();
   const el = document.createElement('p');
   el.style.cssText = 'font-weight:700; margin-top:14px';
   document.querySelector('.card').appendChild(el);

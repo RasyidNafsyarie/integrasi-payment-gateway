@@ -30,13 +30,14 @@ function createOrder({ productId, qty, amount, buyer, gateway, paymentMethod }) 
 
   db.prepare(
     `INSERT INTO orders
-      (order_id, product_id, qty, amount, buyer_name, buyer_email, buyer_phone,
+      (order_id, product_id, qty, amount, total_payment, buyer_name, buyer_email, buyer_phone,
        gateway, payment_method, status, expired_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`
   ).run(
     orderId,
     productId,
     qty,
+    amount,
     amount,
     buyer.name,
     buyer.email,
@@ -53,12 +54,12 @@ function createOrder({ productId, qty, amount, buyer, gateway, paymentMethod }) 
 function savePaymentDetail(orderId, { paymentNumber, totalPayment, expiredAt, paymentMethod }) {
   db.prepare(
     `UPDATE orders
-     SET payment_number = ?, amount = ?, expired_at = ?, payment_method = ?
+     SET payment_number = ?, total_payment = ?, expired_at = ?, payment_method = ?
      WHERE order_id = ?`
   ).run(
     paymentNumber || '',
-    totalPayment || undefined,
-    expiredAt || undefined,
+    totalPayment || 0,
+    expiredAt || null,
     paymentMethod || '',
     orderId
   );
