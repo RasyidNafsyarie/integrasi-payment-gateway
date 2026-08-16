@@ -23,3 +23,6 @@ TASKLIST-*.md
 
 # Folder internal Qoder
 .qoder/
+
+# Folder internal CommandCode
+.commandcode/
