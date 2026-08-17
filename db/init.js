@@ -18,7 +18,8 @@ db.exec(`
     order_id       TEXT    NOT NULL UNIQUE,  -- ID unik dari sistem kita (mis. INV20260806-XXXXXX)
     product_id     INTEGER NOT NULL REFERENCES products(id),
     qty            INTEGER NOT NULL DEFAULT 1,
-    amount         INTEGER NOT NULL,         -- total Rupiah yang harus dibayar
+    amount         INTEGER NOT NULL,         -- subtotal dasar yang dikirim ke gateway
+    total_payment  INTEGER NOT NULL DEFAULT 0, -- jumlah yang benar-benar dibayar user (amount + fee)
     buyer_name     TEXT    NOT NULL DEFAULT '',
     buyer_email    TEXT    NOT NULL DEFAULT '',
     buyer_phone    TEXT    NOT NULL DEFAULT '',
@@ -33,6 +34,15 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 `);
+
+// Migrasi ringan untuk DB versi sebelumnya: tambah kolom total_payment bila belum ada.
+const orderColumns = db.prepare('PRAGMA table_info(orders)').all().map((c) => c.name);
+if (!orderColumns.includes('total_payment')) {
+  db.exec(`ALTER TABLE orders ADD COLUMN total_payment INTEGER NOT NULL DEFAULT 0`);
+  // Isi kolom baru dengan amount yang sudah tersimpan (sebelum kolom ini ada).
+  db.exec(`UPDATE orders SET total_payment = amount WHERE total_payment = 0`);
+  console.log('Migrasi: kolom orders.total_payment ditambahkan.');
+}
 
 // Seed barang hanya jika tabel masih kosong
 const count = db.prepare('SELECT COUNT(*) AS c FROM products').get().c;

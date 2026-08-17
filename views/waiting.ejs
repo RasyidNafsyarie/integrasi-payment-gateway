@@ -4,11 +4,65 @@
 <div class="card">
   <% if (typeof order !== 'undefined' && order) { %>
     <p><strong>Order ID:</strong> <%= order.order_id %></p>
-    <p><strong>Total:</strong> Rp <%= Number(order.amount).toLocaleString('id-ID') %></p>
+    <p><strong>Total Bayar:</strong> Rp <%= Number(order.total_payment || order.amount).toLocaleString('id-ID') %></p>
+    <p><strong>Metode:</strong> <%= order.payment_method %></p>
     <p><span class="status <%= order.status %>"><%= order.status %></span></p>
-    <!-- QRIS / nomor VA / tombol bayar akan dirender di sini pada FASE 2 -->
+
+    <% if (order.status === 'PAID') { %>
+      <div style="margin-top:18px">
+        <a class="btn" href="/result/<%= order.order_id %>">Lihat Hasil Pembayaran</a>
+      </div>
+    <% } else if (order.payment_method === 'qris') { %>
+      <p class="sub" style="margin-top:16px">Scan QRIS berikut menggunakan aplikasi e-wallet / mobile banking kamu:</p>
+      <div style="text-align:center; padding:14px 0">
+        <img src="/qr/<%= order.order_id %>" alt="QRIS Payment" style="width:220px; height:220px; border:1px solid #e3e7f0; border-radius:10px; background:#fff">
+      </div>
+    <% } else { %>
+      <p class="sub" style="margin-top:16px">Transfer ke nomor Virtual Account berikut:</p>
+      <p style="font-size:1.3rem; font-weight:700; letter-spacing:2px; margin:6px 0">
+        <%= order.payment_number || '—' %>
+      </p>
+      <p class="sub">Bank: <strong><%= order.payment_method.toUpperCase() %></strong></p>
+    <% } %>
+
+    <div style="margin-top:18px">
+      <a class="btn" href="/pay/<%= order.order_id %>?action=refresh">Cek Status</a>
+      <a class="btn secondary" href="/">Kembali ke Dashboard</a>
+    </div>
   <% } else { %>
     <p>Belum ada order aktif.</p>
   <% } %>
-  <a class="btn secondary" href="/">Kembali ke Dashboard</a>
 </div>
+
+<% if (typeof order !== 'undefined' && order && order.status !== 'PAID' && order.expired_at) { %>
+<script>
+  // Countdown sisa waktu pembayaran berdasarkan expired_at dari gateway.
+  // Mendukung 2 format: ISO (sudah ada Z / offset) atau 'YYYY-MM-DD HH:MM:SS' (WIB).
+  const raw = '<%= order.expired_at %>';
+  const hasZone = /Z$|[+-]\d{2}:\d{2}$/.test(raw);
+  const target = hasZone
+    ? new Date(raw).getTime()
+    : new Date(raw.replace(' ', 'T') + '+07:00').getTime();
+  const el = document.createElement('p');
+  el.style.cssText = 'font-weight:700; margin-top:14px';
+  document.querySelector('.card').appendChild(el);
+
+  function tick() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      el.textContent = '⏰ Waktu pembayaran habis.';
+      el.style.color = 'var(--err)';
+      return;
+    }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    el.textContent = '⏳ Sisa waktu: ' +
+      String(h).padStart(2, '0') + ':' +
+      String(m).padStart(2, '0') + ':' +
+      String(s).padStart(2, '0');
+    setTimeout(tick, 1000);
+  }
+  tick();
+</script>
+<% } %>
